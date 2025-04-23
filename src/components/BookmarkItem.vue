@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type { Bookmark } from '../types/bookmark';
-import { useBookmarkStore } from '../stores/bookmarkStore';
-import { useLanguageStore } from '../stores/languageStore';
-import { getFavicon, getInitial, extractDomain } from '../utils/favicon';
+import { ref, computed } from "vue";
+import type { Bookmark } from "../types/bookmark";
+import { useBookmarkStore } from "../stores/bookmarkStore";
+import { useLanguageStore } from "../stores/languageStore";
+import { getFavicon, getInitial, extractDomain } from "../utils/favicon";
 
 const props = defineProps<{
   bookmark: Bookmark;
@@ -17,7 +17,7 @@ const showConfirmDelete = ref(false);
 const editedBookmark = ref({
   title: props.bookmark.title,
   url: props.bookmark.url,
-  categoryId: props.bookmark.categoryId
+  categoryId: props.bookmark.categoryId,
 });
 
 // 获取网站favicon
@@ -48,7 +48,7 @@ const toggleEditForm = () => {
     editedBookmark.value = {
       title: props.bookmark.title,
       url: props.bookmark.url,
-      categoryId: props.bookmark.categoryId
+      categoryId: props.bookmark.categoryId,
     };
   }
   showEditForm.value = !showEditForm.value;
@@ -60,7 +60,7 @@ const saveEdit = () => {
     bookmarkStore.updateBookmark(props.bookmark.id, {
       title: editedBookmark.value.title.trim(),
       url: editedBookmark.value.url.trim(),
-      categoryId: editedBookmark.value.categoryId
+      categoryId: editedBookmark.value.categoryId,
     });
     showEditForm.value = false;
     // 重置图片错误状态
@@ -88,81 +88,101 @@ const deleteBookmark = () => {
     <!-- 显示模式 -->
     <div v-if="!showEditForm && !showConfirmDelete" class="bookmark-display">
       <div class="bookmark-icon">
-        <img 
-          v-if="!imageError" 
-          :src="favicon" 
+        <img
+          v-if="!imageError"
+          :src="favicon"
           :alt="bookmark.title"
           @error="handleImageError"
           class="favicon"
         />
         <div v-else class="favicon-fallback">{{ initial }}</div>
       </div>
-      
+
       <div class="bookmark-content">
         <a :href="bookmark.url" target="_blank" class="bookmark-title">
           {{ bookmark.title }}
         </a>
         <div class="bookmark-url">{{ domain }}</div>
       </div>
-      
+
       <div class="bookmark-actions">
-        <button class="edit-button" @click="toggleEditForm">{{ languageStore.t('app.edit') }}</button>
-        <button class="delete-button" @click="confirmDelete">{{ languageStore.t('app.delete') }}</button>
+        <button class="edit-button" @click="toggleEditForm">
+          <span class="button-icon">✏️</span>
+          <!-- {{ languageStore.t('app.edit') }} -->
+        </button>
+        <button class="delete-button" @click="confirmDelete">
+          <span class="button-icon">🗑️</span>
+          <!-- {{ languageStore.t('app.delete') }} -->
+        </button>
       </div>
     </div>
-    
+
     <!-- 编辑模式 -->
-    <form v-else-if="showEditForm" class="bookmark-edit-form" @submit.prevent="saveEdit">
+    <form
+      v-else-if="showEditForm"
+      class="bookmark-edit-form"
+      @submit.prevent="saveEdit"
+    >
       <div class="form-group">
-        <label for="edit-title">{{ languageStore.t('bookmark.title') }}</label>
-        <input 
-          id="edit-title" 
-          v-model="editedBookmark.title" 
+        <label for="edit-title">{{ languageStore.t("bookmark.title") }}</label>
+        <input
+          id="edit-title"
+          v-model="editedBookmark.title"
           required
           class="form-input"
         />
       </div>
-      
+
       <div class="form-group">
-        <label for="edit-url">{{ languageStore.t('bookmark.url') }}</label>
-        <input 
-          id="edit-url" 
-          v-model="editedBookmark.url" 
+        <label for="edit-url">{{ languageStore.t("bookmark.url") }}</label>
+        <input
+          id="edit-url"
+          v-model="editedBookmark.url"
           type="url"
           required
           class="form-input"
         />
       </div>
-      
+
       <div class="form-group">
-        <label for="edit-category">{{ languageStore.t('bookmark.category') }}</label>
-        <select 
+        <label for="edit-category">{{
+          languageStore.t("bookmark.category")
+        }}</label>
+        <select
           id="edit-category"
           v-model="editedBookmark.categoryId"
           class="form-select"
         >
-          <option 
-            v-for="category in bookmarkStore.categories" 
-            :key="category.id" 
+          <option
+            v-for="category in bookmarkStore.categories"
+            :key="category.id"
             :value="category.id"
           >
             {{ category.name }}
           </option>
         </select>
       </div>
-      
+
       <div class="form-actions">
-        <button type="submit" class="save-button">{{ languageStore.t('common.save') }}</button>
-        <button type="button" class="cancel-button" @click="toggleEditForm">{{ languageStore.t('common.cancel') }}</button>
+        <button type="submit" class="save-button">
+          {{ languageStore.t("common.save") }}
+        </button>
+        <button type="button" class="cancel-button" @click="toggleEditForm">
+          {{ languageStore.t("common.cancel") }}
+        </button>
       </div>
     </form>
-    
+
     <!-- 删除确认 -->
     <div v-else-if="showConfirmDelete" class="delete-confirm">
-      <p>{{ languageStore.t('bookmark.delete_confirm') }}</p>
+      <p>{{ languageStore.t("bookmark.delete_confirm") }}</p>
       <div class="form-actions">
-        <button class="confirm-button" @click="deleteBookmark">{{ languageStore.t('confirm.yes') }}</button>
-        <button class="cancel-button" @click="cancelDelete">{{ languageStore.t('common.cancel') }}</button>
+        <button class="confirm-button" @click="deleteBookmark">
+          {{ languageStore.t("confirm.yes") }}
+        </button>
+        <button class="cancel-button" @click="cancelDelete">
+          {{ languageStore.t("common.cancel") }}
+        </button>
       </div>
     </div>
   </div>
@@ -185,6 +205,7 @@ const deleteBookmark = () => {
 .bookmark-display {
   display: flex;
   padding: 16px;
+  position: relative;
 }
 
 .bookmark-icon {
@@ -218,19 +239,18 @@ const deleteBookmark = () => {
 
 .bookmark-content {
   flex: 1;
-  min-width: 0; /* 确保内容能够缩小 */
+  min-width: 0;
 }
 
 .bookmark-title {
-  color: var(--text-color);
-  font-weight: 600;
-  text-decoration: none;
   display: block;
-  margin-bottom: 6px;
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 4px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 16px;
 }
 
 .bookmark-title:hover {
@@ -238,46 +258,51 @@ const deleteBookmark = () => {
 }
 
 .bookmark-url {
-  font-size: 14px;
   color: var(--text-light);
+  font-size: 0.875rem;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .bookmark-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  /* transform: translateY(-50%); */
   display: flex;
-  gap: 12px;
-  margin-left: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
-.edit-button, .delete-button {
-  background: none;
+.bookmark-display:hover .bookmark-actions {
+  opacity: 1;
+}
+
+.edit-button,
+.delete-button {
+  padding: 5px;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 14px;
-  color: var(--text-light);
   transition: all 0.2s;
+  background-color: var(--card-background-hover);
+  color: var(--text-color);
 }
 
 .edit-button:hover {
-  color: var(--primary-color);
-  background-color: rgba(var(--primary-color-rgb), 0.1);
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .delete-button:hover {
-  color: var(--danger-color);
-  background-color: rgba(var(--danger-color-rgb), 0.1);
+  background-color: var(--danger-color);
+  color: white;
 }
 
-.bookmark-edit-form, .delete-confirm {
+.bookmark-edit-form,
+.delete-confirm {
   padding: 16px;
   background-color: var(--card-background);
 }
@@ -294,7 +319,8 @@ const deleteBookmark = () => {
   color: var(--text-color);
 }
 
-.form-input, .form-select {
+.form-input,
+.form-select {
   width: 100%;
   padding: 12px;
   border: 1px solid var(--border-color);
@@ -311,7 +337,8 @@ const deleteBookmark = () => {
   margin-top: 16px;
 }
 
-.save-button, .confirm-button {
+.save-button,
+.confirm-button {
   background-color: var(--primary-color);
   color: white;
   border: none;
@@ -347,20 +374,25 @@ const deleteBookmark = () => {
   background-color: var(--danger-color);
 }
 
+.button-icon {
+  margin-right: 4px;
+  font-size: 12px;
+}
+
 @media (max-width: 768px) {
   .bookmark-display {
     flex-direction: column;
   }
-  
+
   .bookmark-icon {
     margin-right: 0;
     margin-bottom: 12px;
   }
-  
+
   .bookmark-actions {
     flex-direction: row;
     margin-left: 0;
     margin-top: 12px;
   }
 }
-</style> 
+</style>

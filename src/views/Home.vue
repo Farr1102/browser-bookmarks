@@ -5,7 +5,7 @@ import { useLanguageStore } from '../stores/languageStore';
 import { useThemeStore } from '../stores/themeStore';
 import { RouterView, useRoute } from 'vue-router';
 import AddBookmarkDialog from '../components/AddBookmarkDialog.vue';
-import { type ColorScheme, colorSchemes } from '../stores/themeStore';
+import type { ColorScheme } from '../stores/themeStore';
 
 const bookmarkStore = useBookmarkStore();
 const languageStore = useLanguageStore();
@@ -19,7 +19,6 @@ const getCurrentCategoryId = computed(() => {
 });
 
 // 书签对话框状态
-const addBookmarkDialog = ref(null);
 const isAddBookmarkDialogOpen = ref(false);
 
 // 打开添加书签对话框
@@ -120,6 +119,21 @@ const toggleLanguage = () => {
 // 切换主题
 const toggleDarkMode = () => {
   themeStore.toggleDarkMode();
+};
+
+const colorSchemes: Record<string, { light: { primary: string; danger: string }; dark: { primary: string; danger: string } }> = {
+  ocean: {
+    light: { primary: '#1a73e8', danger: '#dc3545' },
+    dark: { primary: '#4ecdc4', danger: '#ff6b6b' }
+  },
+  sunset: {
+    light: { primary: '#f43b47', danger: '#dc3545' },
+    dark: { primary: '#ff9b44', danger: '#ff6b6b' }
+  },
+  forest: {
+    light: { primary: '#42b883', danger: '#dc3545' },
+    dark: { primary: '#2f9164', danger: '#ff6b6b' }
+  }
 };
 </script>
 
@@ -259,7 +273,7 @@ const toggleDarkMode = () => {
     <!-- 添加书签对话框 -->
     <AddBookmarkDialog 
       :is-open="isAddBookmarkDialogOpen" 
-      :initial-category-id="getCurrentCategoryId.value"
+      :initial-category-id="getCurrentCategoryId"
       @close="closeAddBookmarkDialog"
       @bookmark-added="closeAddBookmarkDialog"
     />

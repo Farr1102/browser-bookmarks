@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useBookmarkStore } from '../stores/bookmarkStore';
 import { useLanguageStore } from '../stores/languageStore';
 import { useRoute } from 'vue-router';
+import { useLayoutStore } from '../stores/layoutStore';
 import BookmarkItem from '../components/BookmarkItem.vue';
 import AddBookmarkDialog from '../components/AddBookmarkDialog.vue';
-import type { Bookmark } from '../types/bookmark';
 
 const props = defineProps<{
   categoryId: string;
@@ -13,6 +13,7 @@ const props = defineProps<{
 
 const bookmarkStore = useBookmarkStore();
 const languageStore = useLanguageStore();
+const layoutStore = useLayoutStore();
 const route = useRoute();
 
 // 书签对话框状态
@@ -90,7 +91,9 @@ const pageTitle = computed(() => {
       <button class="add-button" @click="openAddBookmarkDialog">{{ languageStore.t('bookmark.add') }}</button>
     </div>
 
-    <div class="bookmarks-grid">
+    <div class="bookmarks-grid" :style="{ 
+      'grid-template-columns': `repeat(${layoutStore.settings.bookmarksPerRow}, 1fr)` 
+    }">
       <BookmarkItem 
         v-for="bookmark in bookmarks" 
         :key="bookmark.id"
@@ -181,13 +184,12 @@ const pageTitle = computed(() => {
 
 .bookmarks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
 @media (max-width: 768px) {
   .bookmarks-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
   
   .category-header {

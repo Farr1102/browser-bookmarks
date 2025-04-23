@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useBookmarkStore } from '../stores/bookmarkStore';
 import { useLanguageStore } from '../stores/languageStore';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import { useRouter } from 'vue-router';
 import { parseBookmarksFromHtml, isBookmarkHtmlFile } from '../utils/bookmarkParser';
 import { exportBookmarksToHtml } from '../utils/bookmarkExporter';
+import { useLayoutStore } from '../stores/layoutStore';
 
 const bookmarkStore = useBookmarkStore();
 const languageStore = useLanguageStore();
+const layoutStore = useLayoutStore();
 const router = useRouter();
 
 const wallpaperFile = ref<File | null>(null);
@@ -159,6 +161,26 @@ const handleWallpaperSelect = (event: Event) => {
         ></div>
       </div>
     </section>
+
+    <section class="settings-section">
+      <h2 class="section-title">{{ languageStore.t('settings.layout_settings') }}</h2>
+      
+      <div class="layout-controls">
+        <div class="form-group">
+          <label class="form-label">{{ languageStore.t('settings.bookmarks_per_row') }}</label>
+          <div class="form-input-group">
+            <input 
+              type="number" 
+              v-model="layoutStore.settings.bookmarksPerRow"
+              min="2"
+              max="6"
+              class="number-input"
+            >
+          </div>
+          <p class="form-help">{{ languageStore.t('settings.bookmarks_per_row_help') }}</p>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -291,5 +313,48 @@ const handleWallpaperSelect = (event: Event) => {
     width: 100%;
     text-align: center;
   }
+}
+
+.layout-controls {
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.form-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.number-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--input-background);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color-light);
+}
+
+.form-help {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-light);
 }
 </style> 

@@ -55,14 +55,16 @@ export const useBookmarkStore = defineStore('bookmarkStore', () => {
   // 获取分类路径（支持多级分类导航）
   const getCategoryPath = computed(() => (categoryId: string) => {
     const path: Category[] = [];
-    let current = categories.value.find(c => c.id === categoryId);
+    let current: Category | undefined = categories.value.find(c => c.id === categoryId);
     
     while (current) {
       path.unshift(current);
       if (current.parentId) {
-        current = categories.value.find(c => c.id === current?.parentId);
+        const parent = categories.value.find(c => c.id === current?.parentId);
+        if (!parent) break;
+        current = parent;
       } else {
-        current = null;
+        current = undefined;
       }
     }
     

@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onMounted } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useLanguageStore } from '../stores/languageStore';
 
 const languageStore = useLanguageStore();

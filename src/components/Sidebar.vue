@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { useBookmarkStore } from '../stores/bookmarkStore';
 import { useLanguageStore } from '../stores/languageStore';
 
-const props = defineProps<{
+defineProps<{
   isOpen: boolean;
 }>();
 

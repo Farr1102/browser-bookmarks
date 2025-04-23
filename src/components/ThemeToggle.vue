@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
-import { useThemeStore, WallpaperPosition, ColorScheme } from '../stores/themeStore';
+import { useThemeStore } from '../stores/themeStore';
+import type { ColorScheme } from '../stores/themeStore';
 import { useLanguageStore } from '../stores/languageStore';
 
 const themeStore = useThemeStore();
@@ -8,7 +9,7 @@ const languageStore = useLanguageStore();
 const { t } = languageStore;
 
 // 响应式状态
-const isDarkMode = computed(() => themeStore.isDarkMode);
+const isDarkMode = ref(themeStore.isDarkMode);
 const useSystemTheme = computed(() => themeStore.settings.useSystemTheme);
 const customWallpaper = computed(() => themeStore.settings.customWallpaper);
 const wallpaperPosition = computed({
@@ -30,8 +31,8 @@ const wallpaperPreview = ref<string>(customWallpaper.value || '');
 const hasCustomWallpaper = computed(() => !!customWallpaper.value);
 
 // 监听 isDarkMode 变化
-watch(isDarkMode, (newValue) => {
-  themeStore.toggleDarkMode(newValue);
+watch(() => themeStore.isDarkMode, (newValue) => {
+  isDarkMode.value = newValue;
 });
 
 // 监听 useSystemTheme 变化
@@ -71,16 +72,6 @@ const toggleSystemTheme = () => {
 const updateWallpaperBlur = (event: Event) => {
   const value = (event.target as HTMLInputElement).value;
   wallpaperBlur.value = parseInt(value);
-};
-
-// 设置壁纸位置
-const updateWallpaperPosition = () => {
-  themeStore.setWallpaperPosition(wallpaperPosition.value);
-};
-
-// 设置颜色方案
-const setColorScheme = (scheme: ColorScheme) => {
-  themeStore.setColorScheme(scheme);
 };
 
 // 计算壁纸预览样式
