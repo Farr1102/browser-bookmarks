@@ -222,19 +222,32 @@ const deleteBookmark = () => {
   border-radius: 10px;
   background-color: rgba(var(--background-color-rgb), 0.5);
   padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.favicon:hover {
+  transform: scale(1.05);
 }
 
 .favicon-fallback {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-light, #6d8eff));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   font-size: 18px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.favicon-fallback:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
 }
 
 .bookmark-content {
@@ -283,22 +296,42 @@ const deleteBookmark = () => {
 .delete-button {
   padding: 5px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: var(--card-background-hover);
   color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+
+.bookmark-display:hover .edit-button,
+.bookmark-display:hover .delete-button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.edit-button {
+  transition-delay: 0.05s;
+}
+
+.delete-button {
+  transition-delay: 0.1s;
 }
 
 .edit-button:hover {
   background-color: var(--primary-color);
   color: white;
+  transform: translateY(-2px);
 }
 
 .delete-button:hover {
   background-color: var(--danger-color);
   color: white;
+  transform: translateY(-2px);
 }
 
 .bookmark-edit-form,
@@ -375,8 +408,8 @@ const deleteBookmark = () => {
 }
 
 .button-icon {
-  margin-right: 4px;
-  font-size: 12px;
+  margin-right: 6px;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {

@@ -5,7 +5,7 @@ import { ref, watch } from 'vue';
 const LAYOUT_STORAGE_KEY = 'bookmark-layout-settings';
 
 // 默认设置
-const DEFAULT_BOOKMARKS_PER_ROW = 4;
+const DEFAULT_BOOKMARKS_PER_ROW = 3;
 
 interface LayoutSettings {
   bookmarksPerRow: number;

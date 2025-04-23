@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router';
 import { useLayoutStore } from '../stores/layoutStore';
 import BookmarkItem from '../components/BookmarkItem.vue';
 import AddBookmarkDialog from '../components/AddBookmarkDialog.vue';
+import Breadcrumb from '../components/Breadcrumb.vue';
 
 const props = defineProps<{
   categoryId: string;
@@ -29,10 +30,6 @@ const closeAddBookmarkDialog = () => {
   isAddBookmarkDialogOpen.value = false;
 };
 
-const category = computed(() => {
-  return bookmarkStore.getCategoryById(props.categoryId);
-});
-
 const bookmarks = computed(() => {
   // 如果是默认分类且在根路径，则显示所有书签
   if (props.categoryId === 'default' && route.path === '/') {
@@ -42,42 +39,16 @@ const bookmarks = computed(() => {
   return bookmarkStore.getBookmarksByCategory(props.categoryId);
 });
 
-const categoryPath = computed(() => {
-  return bookmarkStore.getCategoryPath(props.categoryId);
-});
-
 // 判断是否为主页（显示所有书签）
 const isHomePage = computed(() => {
   return route.path === '/';
-});
-
-const pageTitle = computed(() => {
-  if (isHomePage.value) {
-    return languageStore.t('nav.all_bookmarks');
-  }
-  return category.value?.name || '';
 });
 </script>
 
 <template>
   <div class="category-view">
     <div class="category-header">
-      <div class="breadcrumb">
-        <template v-if="isHomePage">
-          <h2 class="page-title">{{ pageTitle }}</h2>
-        </template>
-        <template v-else>
-          <template v-for="(cat, index) in categoryPath" :key="cat.id">
-            <router-link 
-              :to="{ name: 'category', params: { categoryId: cat.id } }" 
-              class="breadcrumb-item"
-            >
-              {{ cat.name }}
-            </router-link>
-            <span v-if="index < categoryPath.length - 1" class="breadcrumb-separator">/</span>
-          </template>
-        </template>
-      </div>
+      <Breadcrumb :category-id="categoryId" />
       
       <div class="category-actions">
         <button class="add-button" @click="openAddBookmarkDialog">
@@ -123,31 +94,9 @@ const pageTitle = computed(() => {
   margin-bottom: 1.5rem;
 }
 
-.breadcrumb {
+.category-actions {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-}
-
-.page-title {
-  margin: 0;
-  font-size: 18px;
-  color: var(--text-color);
-}
-
-.breadcrumb-item {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.breadcrumb-item:hover {
-  text-decoration: underline;
-}
-
-.breadcrumb-separator {
-  margin: 0 0.5rem;
-  color: var(--text-light);
 }
 
 .add-button {
@@ -195,10 +144,10 @@ const pageTitle = computed(() => {
   .category-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1rem;
   }
   
   .category-actions {
-    margin-top: 1rem;
     width: 100%;
   }
   
