@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch } from 'vue';
 
 const THEME_STORAGE_KEY = 'browser-bookmarks-theme-settings';
 
@@ -67,11 +67,14 @@ const defaultSettings: ThemeSettings = {
 function loadFromStorage(): ThemeSettings {
   try {
     const storedSettings = localStorage.getItem(THEME_STORAGE_KEY);
-    return storedSettings ? { ...defaultSettings, ...JSON.parse(storedSettings) } : defaultSettings;
+    if (storedSettings) {
+      const parsedSettings = JSON.parse(storedSettings);
+      return { ...defaultSettings, ...parsedSettings };
+    }
   } catch (error) {
     console.error('无法加载主题设置:', error);
-    return defaultSettings;
   }
+  return defaultSettings;
 }
 
 // 保存设置到本地存储
@@ -98,19 +101,25 @@ export const useThemeStore = defineStore('theme', () => {
   
   // 监听系统主题变化
   const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
-  systemThemeMedia.addEventListener('change', e => {
+  const handleSystemThemeChange = (e: MediaQueryListEvent) => {
     if (settings.value.useSystemTheme) {
       isDarkMode.value = e.matches;
+      settings.value.darkMode = e.matches; // 同步更新 darkMode 设置
       applyTheme();
     }
-  });
+  };
+  
+  // 添加系统主题变化监听器
+  systemThemeMedia.addEventListener('change', handleSystemThemeChange);
   
   // 切换暗黑模式
   function toggleDarkMode(value?: boolean): void {
-    isDarkMode.value = value !== undefined ? value : !isDarkMode.value;
+    const newValue = value !== undefined ? value : !isDarkMode.value;
+    isDarkMode.value = newValue;
+    settings.value.darkMode = newValue;
     
-    if (!settings.value.useSystemTheme) {
-      settings.value.darkMode = isDarkMode.value;
+    if (settings.value.useSystemTheme) {
+      settings.value.useSystemTheme = false; // 手动切换时关闭系统主题
     }
     
     applyTheme();
@@ -118,12 +127,18 @@ export const useThemeStore = defineStore('theme', () => {
   
   // 切换是否使用系统主题
   function toggleUseSystemTheme(value?: boolean): void {
-    settings.value.useSystemTheme = value !== undefined ? value : !settings.value.useSystemTheme;
+    const newValue = value !== undefined ? value : !settings.value.useSystemTheme;
+    settings.value.useSystemTheme = newValue;
     
-    if (settings.value.useSystemTheme) {
-      isDarkMode.value = isSystemDarkMode();
-      applyTheme();
+    if (newValue) {
+      const systemDark = isSystemDarkMode();
+      isDarkMode.value = systemDark;
+      settings.value.darkMode = systemDark; // 同步更新 darkMode 设置
+    } else {
+      isDarkMode.value = settings.value.darkMode; // 使用保存的暗色模式设置
     }
+    
+    applyTheme();
   }
   
   // 设置自定义壁纸
