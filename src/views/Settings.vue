@@ -4,6 +4,8 @@ import { useBookmarkStore } from '../stores/bookmarkStore';
 import { useLanguageStore } from '../stores/languageStore';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import { useRouter } from 'vue-router';
+import { parseBookmarksFromHtml, isBookmarkHtmlFile } from '../utils/bookmarkParser';
+import { exportBookmarksToHtml } from '../utils/bookmarkExporter';
 
 const bookmarkStore = useBookmarkStore();
 const languageStore = useLanguageStore();
@@ -13,14 +15,25 @@ const wallpaperFile = ref<File | null>(null);
 const wallpaperPreview = ref<string | null>(null);
 
 // Function to handle exporting bookmarks
-const exportBookmarks = () => {
-  const data = JSON.stringify(bookmarkStore.exportData(), null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
+const exportBookmarks = (format: 'json' | 'html' = 'json') => {
+  const data = bookmarkStore.exportData();
+  let blob;
+  let filename;
+
+  if (format === 'html') {
+    const html = exportBookmarksToHtml(data);
+    blob = new Blob([html], { type: 'text/html' });
+    filename = 'bookmarks-export.html';
+  } else {
+    const json = JSON.stringify(data, null, 2);
+    blob = new Blob([json], { type: 'application/json' });
+    filename = 'bookmarks-export.json';
+  }
   
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'bookmarks-export.json';
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   
@@ -40,8 +53,18 @@ const importBookmarks = (event: Event) => {
   
   reader.onload = (e) => {
     try {
-      const data = JSON.parse(e.target?.result as string);
-      bookmarkStore.importData(data);
+      const content = e.target?.result as string;
+      
+      // Check if it's an HTML bookmark file
+      if (isBookmarkHtmlFile(content)) {
+        const parsedData = parseBookmarksFromHtml(content);
+        bookmarkStore.importData(parsedData);
+      } else {
+        // Try parsing as JSON
+        const data = JSON.parse(content);
+        bookmarkStore.importData(data);
+      }
+      
       alert(languageStore.t('settings.importSuccess'));
     } catch (error) {
       console.error('Import error:', error);
@@ -86,8 +109,11 @@ const handleWallpaperSelect = (event: Event) => {
       <h2 class="section-title">{{ languageStore.t('settings.importExport') }}</h2>
       
       <div class="export-controls">
-        <button class="action-button" @click="exportBookmarks">
-          {{ languageStore.t('settings.export_bookmarks') }}
+        <button class="action-button" @click="exportBookmarks('json')">
+          {{ languageStore.t('export.as_json') }}
+        </button>
+        <button class="action-button" @click="exportBookmarks('html')">
+          {{ languageStore.t('export.as_html') }}
         </button>
       </div>
       
@@ -95,12 +121,12 @@ const handleWallpaperSelect = (event: Event) => {
         <p class="import-note">{{ languageStore.t('settings.import_note') }}</p>
         <label class="file-input-label">
           {{ languageStore.t('settings.import_bookmarks') }}
-          <input 
-            type="file" 
-            class="file-input" 
-            accept=".json" 
+          <input
+            type="file"
+            accept=".json,.html"
             @change="importBookmarks"
-          >
+            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+          />
         </label>
       </div>
     </section>
