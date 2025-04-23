@@ -87,14 +87,14 @@ const handleWallpaperSelect = (event: Event) => {
       
       <div class="export-controls">
         <button class="action-button" @click="exportBookmarks">
-          {{ languageStore.t('settings.exportBookmarks') }}
+          {{ languageStore.t('settings.export_bookmarks') }}
         </button>
       </div>
       
       <div class="import-controls">
-        <p class="import-note">{{ languageStore.t('settings.importNote') }}</p>
+        <p class="import-note">{{ languageStore.t('settings.import_note') }}</p>
         <label class="file-input-label">
-          {{ languageStore.t('settings.importBookmarks') }}
+          {{ languageStore.t('settings.import_bookmarks') }}
           <input 
             type="file" 
             class="file-input" 
@@ -106,16 +106,16 @@ const handleWallpaperSelect = (event: Event) => {
     </section>
 
     <section class="settings-section">
-      <h2 class="section-title">{{ languageStore.t('settings.themeSettings') }}</h2>
+      <h2 class="section-title">{{ languageStore.t('settings.theme_settings') }}</h2>
       <ThemeToggle />
     </section>
     
     <section class="settings-section">
-      <h2 class="section-title">{{ languageStore.t('settings.wallpaperSettings') }}</h2>
+      <h2 class="section-title">{{ languageStore.t('settings.wallpaper_settings') }}</h2>
       
       <div class="wallpaper-controls">
         <label class="file-input-label">
-          {{ languageStore.t('settings.selectWallpaper') }}
+          {{ languageStore.t('theme.select_wallpaper') }}
           <input 
             type="file" 
             class="file-input"

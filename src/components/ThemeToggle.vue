@@ -160,7 +160,7 @@ const colorSchemes = computed(() => [
       
       <div class="theme-option">
         <label class="file-input-label">
-          {{ t('theme.selectWallpaper') }}
+          {{ t('theme.select_wallpaper') }}
           <input 
             type="file" 
             class="file-input" 
