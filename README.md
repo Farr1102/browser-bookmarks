@@ -1,5 +1,97 @@
-# Vue 3 + TypeScript + Vite
+# 书签管理器
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+一个基于Vue 3和TypeScript开发的现代书签管理应用，帮助用户组织和管理网页书签。
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## 主要功能
+
+### 书签管理
+- 添加、编辑和删除书签
+- 按分类组织书签
+- 智能URL识别和自动填充
+- 支持分类嵌套结构
+
+### 分类管理
+- 创建和删除分类
+- 按分类查看书签
+- 支持分类导航路径显示
+
+### 主题设置
+- 明亮/暗黑模式切换
+- 跟随系统主题
+- 顶部导航栏快速切换配色方案
+- 自定义壁纸背景
+  - 调整壁纸显示方式（铺满、包含、居中、平铺）
+  - 调整背景模糊程度
+- 自定义配色方案
+  - 默认蓝色主题
+  - 鲜红主题
+  - 绿意主题
+  - 紫韵主题
+  - 活力橙主题
+
+### 数据管理
+- 本地存储所有数据（localStorage）
+- 支持导入/导出数据
+
+### 其他功能
+- 多语言支持（中文/英文）
+- iOS风格的界面设计
+- 响应式布局，支持各种设备尺寸
+
+## 技术栈
+
+- Vue 3 + Composition API
+- TypeScript
+- Pinia 状态管理
+- Vue Router
+- 纯CSS（无UI框架）
+
+## 开发与构建
+
+### 安装依赖
+```bash
+npm install
+```
+
+### 开发环境运行
+```bash
+npm run dev
+```
+
+### 构建生产版本
+```bash
+npm run build
+```
+
+## 未来计划
+
+- 支持书签搜索功能
+- 添加拖拽排序功能
+- 支持书签同步到云端
+- 支持书签分享功能
+- 支持更多语言
+- 实现PWA支持离线使用
+
+## 功能说明
+
+### 书签管理
+- 添加书签：在任意分类页面点击"添加书签"按钮
+- 编辑书签：点击书签卡片上的"编辑"按钮
+- 删除书签：点击书签卡片上的"删除"按钮，确认后删除
+
+### 分类管理
+- 添加分类：在设置页面的"分类管理"部分添加
+- 支持设置父分类创建多级分类结构
+- 分类可以在侧边栏中展开或折叠
+
+### 主题设置
+- 在设置页面可切换深色/浅色模式
+- 可选择跟随系统主题自动切换
+- 支持上传自定义壁纸作为背景
+- 可调整壁纸显示方式和模糊程度
+- 顶部工具栏快速切换配色方案
+- 五种预设配色方案可选择
+
+### 语言设置
+- 在设置页面可切换中文/英文界面
+- 语言设置会自动保存，下次访问时保持选择

@@ -1,0 +1,269 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useBookmarkStore } from '../stores/bookmarkStore';
+import { useLanguageStore } from '../stores/languageStore';
+import ThemeToggle from '../components/ThemeToggle.vue';
+import { useRouter } from 'vue-router';
+
+const bookmarkStore = useBookmarkStore();
+const languageStore = useLanguageStore();
+const router = useRouter();
+
+const wallpaperFile = ref<File | null>(null);
+const wallpaperPreview = ref<string | null>(null);
+
+// Function to handle exporting bookmarks
+const exportBookmarks = () => {
+  const data = JSON.stringify(bookmarkStore.exportData(), null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bookmarks-export.json';
+  document.body.appendChild(a);
+  a.click();
+  
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+};
+
+// Function to handle importing bookmarks
+const importBookmarks = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (!target.files?.length) return;
+  
+  const file = target.files[0];
+  const reader = new FileReader();
+  
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target?.result as string);
+      bookmarkStore.importData(data);
+      alert(languageStore.t('settings.importSuccess'));
+    } catch (error) {
+      console.error('Import error:', error);
+      alert(languageStore.t('settings.importError'));
+    }
+  };
+  
+  reader.readAsText(file);
+};
+
+// Function to go back to previous page
+const goBack = () => {
+  router.back();
+};
+
+// Function to handle wallpaper file selection
+const handleWallpaperSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (!target.files?.length) return;
+  
+  wallpaperFile.value = target.files[0];
+  
+  // Create a preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    wallpaperPreview.value = e.target?.result as string;
+  };
+  reader.readAsDataURL(wallpaperFile.value);
+};
+</script>
+
+<template>
+  <div class="settings-container">
+    <div class="settings-header">
+      <button class="back-button" @click="goBack">
+        <span class="back-icon">←</span>
+      </button>
+      <h1 class="settings-title">{{ languageStore.t('settings.title') }}</h1>
+    </div>
+
+    <section class="settings-section">
+      <h2 class="section-title">{{ languageStore.t('settings.importExport') }}</h2>
+      
+      <div class="export-controls">
+        <button class="action-button" @click="exportBookmarks">
+          {{ languageStore.t('settings.exportBookmarks') }}
+        </button>
+      </div>
+      
+      <div class="import-controls">
+        <p class="import-note">{{ languageStore.t('settings.importNote') }}</p>
+        <label class="file-input-label">
+          {{ languageStore.t('settings.importBookmarks') }}
+          <input 
+            type="file" 
+            class="file-input" 
+            accept=".json" 
+            @change="importBookmarks"
+          >
+        </label>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2 class="section-title">{{ languageStore.t('settings.themeSettings') }}</h2>
+      <ThemeToggle />
+    </section>
+    
+    <section class="settings-section">
+      <h2 class="section-title">{{ languageStore.t('settings.wallpaperSettings') }}</h2>
+      
+      <div class="wallpaper-controls">
+        <label class="file-input-label">
+          {{ languageStore.t('settings.selectWallpaper') }}
+          <input 
+            type="file" 
+            class="file-input"
+            accept="image/*"
+            @change="handleWallpaperSelect"
+          >
+        </label>
+      </div>
+      
+      <div v-if="wallpaperPreview" class="wallpaper-preview">
+        <p class="preview-label">{{ languageStore.t('settings.preview') }}:</p>
+        <div 
+          class="preview-image"
+          :style="{ 'background-image': `url(${wallpaperPreview})` }"
+        ></div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<style scoped>
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.back-button:hover {
+  background-color: var(--card-background-hover);
+}
+
+.back-icon {
+  display: inline-block;
+  line-height: 1;
+}
+
+.settings-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  flex-grow: 1;
+}
+
+.settings-section {
+  background-color: var(--card-background);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.section-title {
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.export-controls, .import-controls, .wallpaper-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.action-button, .file-input-label {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.file-input-label:hover {
+  background-color: var(--primary-hover);
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.import-note {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.wallpaper-preview {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.preview-label {
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.preview-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+@media (max-width: 768px) {
+  .export-controls, .import-controls, .wallpaper-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-button, .file-input-label {
+    width: 100%;
+    text-align: center;
+  }
+}
+</style> 
